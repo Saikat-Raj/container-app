@@ -1,0 +1,29 @@
+steps:
+  # Build and Push Container 1
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/container-app/container-repo/container1', './container1']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/container-app/container-repo/container1']
+
+  # Build and Push Container 2
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/container-app/container-repo/container2', './container2']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/container-app/container-repo/container2']
+
+  # Apply Kubernetes Deployments
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'container1-deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=container-cluster'
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'container2-deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=container-cluster'
+
+images:
+  - 'us-central1-docker.pkg.dev/container-app/container-repo/container1'
+  - 'us-central1-docker.pkg.dev/container-app/container-repo/container2'
