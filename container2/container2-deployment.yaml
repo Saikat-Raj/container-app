@@ -14,16 +14,16 @@ spec:
     spec:
       containers:
       - name: container2
-        image: us-central1-docker.pkg.dev/container-app/container-repo/container2
+        image: us-central1-docker.pkg.dev/container-app-454314/container-app/container2:latest
         ports:
-        - containerPort: 6001
+        - containerPort: 5001
         volumeMounts:
-        - name: data-volume
-          mountPath: /data
+        - name: saikat-volume
+          mountPath: /saikat_PV_dir
       volumes:
-      - name: data-volume
-        hostPath:
-          path: /data
+      - name: saikat-volume
+        persistentVolumeClaim:
+          claimName: saikat-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -33,7 +33,5 @@ spec:
   selector:
     app: container2
   ports:
-    - protocol: TCP
-      port: 6001
-      targetPort: 6001
-  type: ClusterIP
+  - port: 5001
+    targetPort: 5001
