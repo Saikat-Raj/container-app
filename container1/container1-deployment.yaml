@@ -14,19 +14,19 @@ spec:
     spec:
       containers:
       - name: container1
-        image: us-central1-docker.pkg.dev/container-app/container-repo/container1
+        image: us-central1-docker.pkg.dev/container-app-454314/container-app/container1:latest
         ports:
-        - containerPort: 6000
+        - containerPort: 5000
+        volumeMounts:
+        - name: saikat-volume
+          mountPath: /saikat_PV_dir
         env:
         - name: CONTAINER2_URL
-          value: "http://container2-service:6001"
-        volumeMounts:
-        - name: data-volume
-          mountPath: /data
+          value: "http://container2-service:5001"
       volumes:
-      - name: data-volume
-        hostPath:
-          path: /data
+      - name: saikat-volume
+        persistentVolumeClaim:
+          claimName: saikat-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -36,7 +36,6 @@ spec:
   selector:
     app: container1
   ports:
-    - protocol: TCP
-      port: 6000
-      targetPort: 6000
+  - port: 80
+    targetPort: 5000
   type: LoadBalancer
